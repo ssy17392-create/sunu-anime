@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime Sénégal - La Plateforme N°1 d'Animes au Sénégal</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#fff1f2',
+                            500: '#e11d48',
+                            600: '#e11d48',
+                            700: '#be123c',
+                            yellow: '#fbbf24',
+                            green: '#10b981'
+                        },
+                        darkBg: '#0b0f19',
+                        darkCard: 'rgba(17, 24, 39, 0.75)',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0f19;
+            color: #f3f4f6;
+            overflow-x: hidden;
+        }
+
+        .glass {
+            background: rgba(17, 24, 39, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-card {
+            background: rgba(22, 30, 46, 0.65);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-6px) scale(1.01);
+            border-color: rgba(225, 29, 72, 0.4);
+            box-shadow: 0 12px 24px -10px rgba(225, 29, 72, 0.3);
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1f2937;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #e11d48;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-brand-600 selection:text-white">
+
+    <!-- BARRE DE NAVIGATION -->
+    <header class="sticky top-0 z-40 w-full glass transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+            
+            <!-- Logo -->
+            <a href="#" onclick="resetFilters()" class="flex items-center gap-3 group shrink-0">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-emerald-500 flex items-center justify-center text-white shadow-lg shadow-brand-600/30 group-hover:rotate-6 transition-transform">
+                    <i class="fa-solid fa-play text-lg pl-0.5"></i>
+                </div>
+                <div>
+                    <span class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-white via-gray-200 to-brand-500 bg-clip-text text-transparent">
+                        ANIME<span class="text-emerald-400">.SN</span>
+                    </span>
+                    <span class="block text-[10px] text-gray-400 uppercase tracking-widest font-semibold -mt-1">Sénégal Streaming</span>
+                </div>
+            </a>
+
+            <!-- Recherche (Desktop) -->
+            <div class="hidden md:flex flex-1 max-w-md relative">
+                <input type="text" id="searchInput" oninput="handleSearch(this.value)" placeholder="Rechercher un anime, un genre..." 
+                    class="w-full bg-gray-900/80 border border-gray-700/60 text-sm text-gray-200 rounded-full py-2.5 pl-11 pr-10 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all placeholder-gray-500">
+                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+            </div>
+
+            <!-- Liens de navigation -->
+            <nav class="hidden lg:flex items-center gap-6 font-medium text-sm text-gray-300">
+                <button onclick="resetFilters()" class="hover:text-brand-500 transition-colors py-2 flex items-center gap-2">
+                    <i class="fa-solid fa-house text-xs"></i> Accueil
+                </button>
+                <button onclick="filterByGenre('Tous')" class="hover:text-brand-500 transition-colors py-2 flex items-center gap-2">
+                    <i class="fa-solid fa-fire text-xs text-brand-500"></i> Tendances
+                </button>
+                <button onclick="toggleFavOnly()" id="favNavBtn" class="hover:text-brand-500 transition-colors py-2 flex items-center gap-2 relative">
+                    <i class="fa-solid fa-bookmark text-xs text-emerald-400"></i> Mes Favoris
+                    <span id="favBadge" class="bg-brand-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full hidden">0</span>
+                </button>
+            </nav>
+
+            <div class="flex items-center gap-3">
+                <button onclick="toggleMobileSearch()" class="md:hidden p-2.5 text-gray-300 hover:text-white glass rounded-xl">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Recherche Mobile -->
+        <div id="mobileSearch" class="hidden md:hidden px-4 pb-4">
+            <div class="relative">
+                <input type="text" oninput="handleSearch(this.value)" placeholder="Rechercher un anime..." 
+                    class="w-full bg-gray-900 border border-gray-700 text-sm text-gray-200 rounded-xl py-2.5 pl-10 pr-4 focus:outline-none focus:border-brand-500">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTENU PRINCIPAL -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-10">
+
+        <!-- BANNIÈRE HERO -->
+        <section id="heroSection" class="relative rounded-3xl overflow-hidden glass shadow-2xl min-h-[420px] md:min-h-[480px] flex items-end">
+            <div id="heroBg" class="absolute inset-0 bg-cover bg-center transition-all duration-700 scale-105" style="background-image: url('https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=1600&q=80');"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-darkBg via-darkBg/60 to-transparent"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-darkBg via-darkBg/80 to-transparent"></div>
+
+            <div class="relative z-10 p-6 sm:p-10 max-w-2xl space-y-4">
+                <div class="flex items-center gap-2">
+                    <span class="px-3 py-1 rounded-full bg-brand-600/90 text-white text-xs font-bold tracking-wider uppercase flex items-center gap-1 shadow-lg shadow-brand-600/40">
+                        <i class="fa-solid fa-fire"></i> POPULAIRE AU SÉNÉGAL
+                    </span>
+                    <span class="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-semibold">
+                        HD • VOSTFR / VF
+                    </span>
+                </div>
+
+                <h1 id="heroTitle" class="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">Solo Leveling</h1>
+                <p id="heroDesc" class="text-gray-300 text-sm sm:text-base line-clamp-3 font-normal leading-relaxed">
+                    Dans un monde où des donjons connectent notre univers à des monstres, Sung Jinwoo est le plus faible des chasseurs...
+                </p>
+
+                <div class="flex flex-wrap items-center gap-4 pt-2">
+                    <button id="heroPlayBtn" onclick="openPlayer(1)" class="px-7 py-3.5 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm shadow-xl shadow-brand-600/30 flex items-center gap-3 transition-all hover:scale-105">
+                        <i class="fa-solid fa-play text-base"></i> REGARDER MAINTENANT
+                    </button>
+                    <button id="heroFavBtn" onclick="toggleFavorite(1)" class="p-3.5 rounded-2xl glass hover:bg-white/10 text-white font-semibold text-sm transition-all hover:scale-105">
+                        <i id="heroFavIcon" class="fa-regular fa-bookmark text-base"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- FILTRES PAR GENRE -->
+        <section class="space-y-4">
+            <div class="flex items-center justify-between">
+                <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-shapes text-brand-500"></i> Catégories & Genres
+                </h2>
+                <span class="text-xs text-gray-400" id="resultsCount">Affichage de tous les animes</span>
+            </div>
+
+            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1" id="genreContainer"></div>
+        </section>
+
+        <!-- GRILLE D'ANIMES -->
+        <section id="animeSection" class="space-y-6">
+            <div class="flex items-center justify-between border-b border-gray-800 pb-4">
+                <h2 id="sectionHeading" class="text-xl sm:text-2xl font-extrabold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-bolt text-yellow-400"></i> Catalogue Animes
+                </h2>
+            </div>
+
+            <div id="animeGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6"></div>
+
+            <div id="emptyState" class="hidden text-center py-16 space-y-4 glass rounded-3xl">
+                <i class="fa-solid fa-ghost text-5xl text-gray-600"></i>
+                <p class="text-gray-400 font-medium">Aucun anime trouvé pour ce critère.</p>
+                <button onclick="resetFilters()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-sm font-semibold transition-colors">
+                    Réinitialiser
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="mt-20 border-t border-gray-800/80 glass py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
+            <div>
+                <div class="flex items-center justify-center md:justify-start gap-2 font-bold text-white text-lg">
+                    <span>ANIME<span class="text-emerald-400">.SN</span></span>
+                </div>
+                <p class="text-xs text-gray-400 mt-1">Plateforme N°1 de streaming vidéo au Sénégal.</p>
+            </div>
+            <div class="text-xs text-gray-500">
+                &copy; 2026 Anime Sénégal. Tous droits réservés.
+            </div>
+        </div>
+    </footer>
+
+    <!-- LECTEUR DE VIDÉO (MODAL / ANIME-SAMA STYLE) -->
+    <div id="playerModal" class="fixed inset-0 z-50 hidden bg-black/90 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 md:p-6 transition-opacity duration-300 opacity-0">
+        <div class="relative w-full max-w-5xl bg-darkBg border border-gray-800 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[95vh]">
+            
+            <!-- Entête du lecteur -->
+            <div class="p-4 glass flex items-center justify-between border-b border-gray-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center text-white font-bold text-xs">SN</div>
+                    <div>
+                        <h3 id="modalAnimeTitle" class="text-base sm:text-lg font-bold text-white leading-tight">Solo Leveling</h3>
+                        <p id="modalEpisodeSubtitle" class="text-xs text-gray-400">Épisode 1 • VOSTFR</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button onclick="toggleModalFav()" id="modalFavBtn" class="p-2 text-gray-400 hover:text-brand-500 rounded-lg glass">
+                        <i class="fa-regular fa-bookmark"></i>
+                    </button>
+                    <button onclick="closePlayer()" class="p-2 text-gray-400 hover:text-white rounded-lg glass">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Corps du lecteur -->
+            <div class="overflow-y-auto flex-1 p-4 space-y-6">
+                
+                <!-- Sélection de l'hébergeur -->
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between text-xs font-semibold text-gray-400">
+                        <span class="flex items-center gap-1.5">
+                            <i class="fa-solid fa-server text-brand-500"></i> Choisir le lecteur (Hébergeur) :
+                        </span>
+                        <span class="text-[10px] bg-brand-600/20 text-brand-400 px-2 py-0.5 rounded border border-brand-500/30">
+                            Mode Anime-Sama
+                        </span>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2" id="hostSelectorContainer"></div>
+                </div>
+
+                <!-- Iframe Lecteur Vidéo -->
+                <div class="relative aspect-video bg-black rounded-2xl overflow-hidden border border-gray-800 shadow-2xl">
+                    <iframe id="videoIframe" class="w-full h-full border-0" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+                    
+                    <div class="absolute bottom-2 right-2 bg-black/80 backdrop-blur-md px-3 py-1 rounded-lg text-[11px] text-gray-300 flex items-center gap-2 border border-gray-800">
+                        <span id="currentHostBadge" class="text-brand-500 font-bold">Vidmoly</span>
+                        <span class="text-gray-600">•</span>
+                        <button onclick="openDirectLink()" class="hover:text-white transition-colors text-emerald-400 font-medium" title="Ouvrir la source en direct si l'iframe est bloquée">
+                            <i class="fa-solid fa-external-link text-xs mr-1"></i> Ouvrir source
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Contrôles Langue & Options -->
+                <div class="flex flex-wrap items-center justify-between gap-4 p-4 glass rounded-2xl">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs text-gray-400 font-semibold">Langue :</span>
+                        <button onclick="setLanguage('VOSTFR')" id="btnVostfr" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-brand-600 text-white shadow-lg shadow-brand-600/30">VOSTFR</button>
+                        <button onclick="setLanguage('VF')" id="btnVf" class="px-3.5 py-1.5 rounded-xl text-xs font-bold glass text-gray-400 hover:text-white">VF</button>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <span class="px-2.5 py-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-lg text-xs font-bold flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Lecteur Actif
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Grille des épisodes -->
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-sm font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-list-ol text-brand-500"></i> Épisodes
+                        </h4>
+                        <span id="epTotalBadge" class="text-xs text-gray-400">12 Épisodes</span>
+                    </div>
+                    <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2" id="episodeListGrid"></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 glass px-5 py-3 rounded-2xl border-l-4 border-brand-500 text-white text-sm font-semibold shadow-2xl transition-all duration-300 translate-y-20 opacity-0 flex items-center gap-3">
+        <i class="fa-solid fa-circle-check text-emerald-400 text-base" id="toastIcon"></i>
+        <span id="toastMsg">Action effectuée</span>
+    </div>
+
+    <!-- CODE JAVASCRIPT -->
+    <script>
+        // DONNÉES ANIMES & HÉBERGEURS VIDÉO
+        const ANIME_DATA = [
+            {
+                id: 1,
+                title: "Solo Leveling",
+                genre: "Action",
+                rating: "4.9",
+                episodes: 12,
+                image: "https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=600&q=80",
+                desc: "Dans un monde où des donjons connectent notre univers à des monstres, Jinwoo est le plus faible des chasseurs.",
+                hosts: {
+                    VOSTFR: [
+                        { name: "Sibnet", embed: "https://video.sibnet.ru/shell.php?videoid=5321872" },
+                        { name: "Vidmoly", embed: "https://vidmoly.me/embed-4m2s9x0a1b2c.html" },
+                        { name: "Sendvid", embed: "https://sendvid.com/embed/sample1" }
+                    ],
+                    VF: [
+                        { name: "Sibnet", embed: "https://video.sibnet.ru/shell.php?videoid=5321873" },
+                        { name: "Vidmoly", embed: "https://vidmoly.me/embed-vf12345.html" }
+                    ]
+                }
+            },
+            {
+                id: 2,
+                title: "Demon Slayer (Kimetsu no Yaiba)",
+                genre: "Action",
+                rating: "4.8",
+                episodes: 26,
+                image: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=600&q=80",
+                desc: "Tanjiro combat des démons pour sauver sa sœur Nezuko transformée en monstre.",
+                hosts: {
+                    VOSTFR: [
+                        { name: "Sibnet", embed: "https://video.sibnet.ru/shell.php?videoid=4812304" },
+                        { name: "Vidmoly", embed: "https://vidmoly.me/embed-ds123.html" }
+                    ],
+                    VF: [
+                        { name: "Sibnet", embed: "https://video.sibnet.ru/shell.php?videoid=4812305" }
+                    ]
+                }
+            },
+            {
+                id: 3,
+                title: "Jujutsu Kaisen",
+                genre: "Shonen",
+                rating: "4.9",
+                episodes: 24,
+                image: "https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=600&q=80",
+                desc: "Yuji Itadori avale un doigt maudit puissant et rejoint l'école des exorcistes.",
+                hosts: {
+                    VOSTFR: [
+                        { name: "Sibnet", embed: "https://video.sibnet.ru/shell.php?videoid=5102931" },
+                        { name: "Vidmoly", embed: "https://vidmoly.me/embed-jjk01.html" }
+                    ],
+                    VF: [
+                        { name: "Sibnet", embed: "https://video.sibnet.ru/shell.php?videoid=5102932" }
+                    ]
+                }
+            },
+            {
+                id: 4,
+                title: "One Piece",
+                genre: "Aventure",
+                rating: "4.9",
+                episodes: 1090,
+                image: "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=600&q=80",
+                desc: "Luffy et son équipage naviguent sur les mers à la recherche du trésor ultime, le One Piece.",
+                hosts: {
+                    VOSTFR: [
+                        { name: "Sibnet", embed: "https://video.sibnet.ru/shell.php?videoid=5012391" }
+                    ],
+                    VF: [
+                        { name: "Vidmoly", embed: "https://vidmoly.me/embed-opvf.html" }
+                    ]
+                }
+            }
+        ];
+
+        const GENRES = ["Tous", "Shonen", "Action", "Aventure"];
+
+        let activeGenre = "Tous";
+        let searchQuery = "";
+        let favorites = JSON.parse(localStorage.getItem('sn_anime_favs')) || [1];
+        let showOnlyFavs = false;
+        let currentAnimeInModal = null;
+        let currentLanguage = 'VOSTFR';
+        let currentHostIndex = 0;
+        let currentEpisode = 1;
+
+        window.onload = function() {
+            renderGenres();
+            renderAnimeGrid();
+            updateFavBadge();
+        };
+
+        function renderGenres() {
+            const container = document.getElementById('genreContainer');
+            container.innerHTML = GENRES.map(genre => `
+                <button onclick="filterByGenre('${genre}')" class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+                    activeGenre === genre 
+                    ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/30' 
+                    : 'glass text-gray-400 hover:text-white'
+                }">
+                    ${genre}
+                </button>
+            `).join('');
+        }
+
+        function renderAnimeGrid() {
+            const grid = document.getElementById('animeGrid');
+            const emptyState = document.getElementById('emptyState');
+
+            let filtered = ANIME_DATA.filter(anime => {
+                const matchesGenre = activeGenre === "Tous" || anime.genre === activeGenre;
+                const matchesSearch = anime.title.toLowerCase().includes(searchQuery.toLowerCase());
+                const matchesFav = !showOnlyFavs || favorites.includes(anime.id);
+                return matchesGenre && matchesSearch && matchesFav;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            grid.innerHTML = filtered.map(anime => {
+                const isFav = favorites.includes(anime.id);
+                return `
+                    <div class="glass-card rounded-2xl overflow-hidden group flex flex-col justify-between">
+                        <div class="relative aspect-[3/4] overflow-hidden cursor-pointer" onclick="openPlayer(${anime.id})">
+                            <img src="${anime.image}" alt="${anime.title}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80"></div>
+                            
+                            <button onclick="event.stopPropagation(); toggleFavorite(${anime.id})" class="absolute top-3 right-3 p-2 rounded-xl glass hover:bg-white/20 text-white transition-colors">
+                                <i class="${isFav ? 'fa-solid text-brand-500' : 'fa-regular'} fa-bookmark"></i>
+                            </button>
+
+                            <div class="absolute bottom-3 left-3 right-3">
+                                <span class="px-2 py-0.5 rounded bg-brand-600/90 text-white text-[10px] font-bold">${anime.genre}</span>
+                                <h3 class="text-sm font-bold text-white mt-1 line-clamp-1">${anime.title}</h3>
+                            </div>
+                        </div>
+
+                        <div class="p-3 flex items-center justify-between text-xs text-gray-400 border-t border-gray-800/50">
+                            <span><i class="fa-solid fa-star text-yellow-400 mr-1"></i>${anime.rating}</span>
+                            <span>${anime.episodes} Éps</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterByGenre(genre) {
+            activeGenre = genre;
+            showOnlyFavs = false;
+            renderGenres();
+            renderAnimeGrid();
+        }
+
+        function handleSearch(val) {
+            searchQuery = val;
+            renderAnimeGrid();
+        }
+
+        function toggleFavorite(id) {
+            if (favorites.includes(id)) {
+                favorites = favorites.filter(favId => favId !== id);
+                showToast("Retiré des favoris");
+            } else {
+                favorites.push(id);
+                showToast("Ajouté aux favoris");
+            }
+            localStorage.setItem('sn_anime_favs', JSON.stringify(favorites));
+            updateFavBadge();
+            renderAnimeGrid();
+            if (currentAnimeInModal && currentAnimeInModal.id === id) updateModalFavBtn();
+        }
+
+        function updateFavBadge() {
+            const badge = document.getElementById('favBadge');
+            badge.innerText = favorites.length;
+            if (favorites.length > 0) badge.classList.remove('hidden');
+            else badge.classList.add('hidden');
+        }
+
+        function toggleFavOnly() {
+            showOnlyFavs = !showOnlyFavs;
+            renderAnimeGrid();
+        }
+
+        function resetFilters() {
+            activeGenre = "Tous";
+            searchQuery = "";
+            showOnlyFavs = false;
+            renderGenres();
+            renderAnimeGrid();
+        }
+
+        // LECTEUR ET HÉBERGEURS
+        function openPlayer(animeId) {
+            const anime = ANIME_DATA.find(a => a.id === animeId);
+            if (!anime) return;
+
+            currentAnimeInModal = anime;
+            currentEpisode = 1;
+            currentHostIndex = 0;
+
+            document.getElementById('modalAnimeTitle').innerText = anime.title;
+            document.getElementById('epTotalBadge').innerText = `${anime.episodes} Épisodes`;
+
+            renderHostButtons();
+            renderEpisodeGrid();
+            loadVideoSource();
+            updateModalFavBtn();
+
+            const modal = document.getElementById('playerModal');
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+            document.body.style.overflow = 'hidden';
+        }
+
+        function renderHostButtons() {
+            const container = document.getElementById('hostSelectorContainer');
+            const availableHosts = currentAnimeInModal.hosts[currentLanguage] || currentAnimeInModal.hosts['VOSTFR'] || [];
+
+            container.innerHTML = availableHosts.map((host, idx) => `
+                <button onclick="selectHost(${idx})" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                    currentHostIndex === idx 
+                    ? 'bg-brand-600 text-white shadow-lg' 
+                    : 'glass text-gray-300 hover:text-white'
+                }">
+                    ${host.name}
+                </button>
+            `).join('');
+        }
+
+        function renderEpisodeGrid() {
+            const epList = document.getElementById('episodeListGrid');
+            let epHtml = '';
+            for (let i = 1; i <= Math.min(currentAnimeInModal.episodes, 24); i++) {
+                epHtml += `
+                    <button onclick="changeEpisode(${i})" class="py-2 rounded-xl text-xs font-bold transition-all ${
+                        currentEpisode === i 
+                        ? 'bg-brand-600 text-white' 
+                        : 'glass text-gray-300 hover:bg-white/10'
+                    }">
+                        Ép. ${i}
+                    </button>
+                `;
+            }
+            epList.innerHTML = epHtml;
+        }
+
+        function selectHost(idx) {
+            currentHostIndex = idx;
+            renderHostButtons();
+            loadVideoSource();
+        }
+
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            currentHostIndex = 0;
+
+            document.getElementById('btnVostfr').className = lang === 'VOSTFR' ? 'px-3.5 py-1.5 rounded-xl text-xs font-bold bg-brand-600 text-white' : 'px-3.5 py-1.5 rounded-xl text-xs font-bold glass text-gray-400';
+            document.getElementById('btnVf').className = lang === 'VF' ? 'px-3.5 py-1.5 rounded-xl text-xs font-bold bg-brand-600 text-white' : 'px-3.5 py-1.5 rounded-xl text-xs font-bold glass text-gray-400';
+
+            renderHostButtons();
+            loadVideoSource();
+        }
+
+        function changeEpisode(ep) {
+            currentEpisode = ep;
+            renderEpisodeGrid();
+            loadVideoSource();
+        }
+
+        function loadVideoSource() {
+            const availableHosts = currentAnimeInModal.hosts[currentLanguage] || currentAnimeInModal.hosts['VOSTFR'] || [];
+            const host = availableHosts[currentHostIndex] || availableHosts[0];
+            const iframe = document.getElementById('videoIframe');
+
+            if (host) {
+                document.getElementById('currentHostBadge').innerText = `${host.name} • Ép. ${currentEpisode}`;
+                document.getElementById('modalEpisodeSubtitle').innerText = `Épisode ${currentEpisode} • ${currentLanguage} (${host.name})`;
+                iframe.src = host.embed;
+            }
+        }
+
+        function openDirectLink() {
+            const availableHosts = currentAnimeInModal.hosts[currentLanguage] || currentAnimeInModal.hosts['VOSTFR'] || [];
+            const host = availableHosts[currentHostIndex];
+            if (host && host.embed) window.open(host.embed, '_blank');
+        }
+
+        function closePlayer() {
+            const modal = document.getElementById('playerModal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.getElementById('videoIframe').src = "";
+            }, 300);
+            document.body.style.overflow = 'auto';
+        }
+
+        function updateModalFavBtn() {
+            const isFav = favorites.includes(currentAnimeInModal.id);
+            document.getElementById('modalFavBtn').innerHTML = `<i class="${isFav ? 'fa-solid text-brand-500' : 'fa-regular'} fa-bookmark"></i>`;
+        }
+
+        function toggleModalFav() {
+            if (currentAnimeInModal) toggleFavorite(currentAnimeInModal.id);
+        }
+
+        function toggleMobileSearch() {
+            document.getElementById('mobileSearch').classList.toggle('hidden');
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').innerText = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
+        }
+    </script>
+</body>
+</html>
